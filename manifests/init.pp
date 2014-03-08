@@ -72,6 +72,7 @@
 # [*ssh_keys*]
 #   A hash of SSH key data in the following form:
 #     { key1 => { type => 'ssh-rsa', key => 'AAAZZZ...' } }
+#   Defaults to undef.
 #
 # [*comment*]
 #   Sets comment metadata for the user
@@ -213,16 +214,12 @@ define account(
   if $ssh_keys != undef {
     validate_hash($ssh_keys)
 
-    $overrides = {
+    $defaults = {
       ensure => $ensure,
+      type   => 'ssh-rsa',
       user   => $username,
     }
 
-    $defaults = {
-      type => 'ssh-rsa'
-    }
-
-    $keys = merge($ssh_keys, $overrides)
     create_resources('ssh_authorized_key', $keys, $defaults)
   }
 }
