@@ -220,7 +220,7 @@ define account(
       user   => $username,
     }
 
-    create_resources('ssh_authorized_key', $keys, $defaults)
+    create_resources('ssh_authorized_key', $ssh_keys, $defaults)
   }
 }
 
