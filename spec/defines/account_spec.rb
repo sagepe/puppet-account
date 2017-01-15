@@ -1,6 +1,13 @@
 require 'spec_helper'
 
 describe 'account' do
+
+  let :facts do
+    {
+      :operatingsystem => 'Debian'
+    }
+  end
+
   describe 'account with default values' do
     let( :title ) { 'user' }
 
@@ -154,4 +161,3 @@ describe 'account' do
     end
   end
 end
-
