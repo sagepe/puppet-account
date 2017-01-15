@@ -199,20 +199,20 @@ define account(
 
   file {
     "${title}_home":
-      ensure  => $dir_ensure,
-      path    => $home_dir_real,
-      owner   => $dir_owner,
-      group   => $dir_group,
-      force   => $purge,
-      mode    => $home_dir_perms;
+      ensure => $dir_ensure,
+      path   => $home_dir_real,
+      owner  => $dir_owner,
+      group  => $dir_group,
+      force  => $purge,
+      mode   => $home_dir_perms;
 
     "${title}_sshdir":
-      ensure  => $dir_ensure,
-      path    => "${home_dir_real}/.ssh",
-      owner   => $dir_owner,
-      group   => $dir_group,
-      force   => $purge,
-      mode    => '0700';
+      ensure => $dir_ensure,
+      path   => "${home_dir_real}/.ssh",
+      owner  => $dir_owner,
+      group  => $dir_group,
+      force  => $purge,
+      mode   => '0700';
   }
 
   if $ssh_key != undef {
