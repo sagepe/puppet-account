@@ -66,14 +66,21 @@
 #   Defaults to false.
 #
 # [*ssh_key*]
+#   _DEPRECATED_ - This setting is deprecated in favor of *ssh_keys*
 #   A string containing a public key suitable for SSH logins
 #   If set to 'undef', no key will be created.
 #   Defaults to undef.
 #
 # [*ssh_key_type*]
+#   _DEPRECATED_ - This setting is deprecated in favor of *ssh_keys*
 #   The type of SSH key to manage. Accepts any value accepted by
 #   the ssh_authorized_key's 'type' parameter.
 #   Defaults to 'ssh-rsa'.
+#
+# [*ssh_keys*]
+#   A hash of SSH key data in the following form:
+#     { key1 => { type => 'ssh-rsa', key => 'AAAZZZ...' } }
+#   Defaults to undef.
 #
 # [*comment*]
 #   Sets comment metadata for the user
@@ -104,11 +111,24 @@
 # Copyright 2013 Tray Torrance, unless otherwise noted
 #
 define account(
-  $username = $title, $password = '!', $shell = '/bin/bash',
-  $manage_home = true, $home_dir = undef,  $home_dir_perms = '0750',
-  $create_group = true, $system = false, $uid = undef, $ssh_key = undef,
-  $ssh_key_type = 'ssh-rsa', $groups = [], $ensure = present, $purge = false,
-  $comment= "${title} Puppet-managed User", $gid = 'users', $allowdupe = false
+  $username       = $title,
+  $password       = '!',
+  $shell          = '/bin/bash',
+  $manage_home    = true,
+  $home_dir       = undef,
+  $home_dir_perms = '0750',
+  $create_group   = true,
+  $system         = false,
+  $uid            = undef,
+  $ssh_key        = undef,
+  $ssh_key_type   = 'ssh-rsa',
+  $groups         = [],
+  $ensure         = present,
+  $purge          = false,
+  $comment        = "${title} Puppet-managed User",
+  $gid            = 'users',
+  $allowdupe      = false,
+  $ssh_keys       = undef
 ) {
 
   if $home_dir == undef {
@@ -208,7 +228,8 @@ define account(
   }
 
   if $ssh_key != undef {
-    File["${title}_sshdir"]->
+    warning('The "ssh_key" setting of the "account" type has been deprecated in favor of "ssh_keys"! Check the docs and upgrade ASAP.')
+
     ssh_authorized_key {
       $title:
         ensure => $ensure,
@@ -218,5 +239,16 @@ define account(
         key    => $ssh_key,
     }
   }
-}
 
+  if $ssh_keys != undef {
+    validate_hash($ssh_keys)
+
+    $defaults = {
+      'ensure' => $ensure,
+      'type'   => 'ssh-rsa',
+      'user'   => $username,
+    }
+
+    create_resources('ssh_authorized_key', $ssh_keys, $defaults)
+  }
+}
